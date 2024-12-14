@@ -134,12 +134,17 @@ You should see:
 - `images/`
 - `transforms.json`
 
-### 2. Convert `transforms.json` to CSV
-Run the provided `json_to_csv.py` script:
-```bash
+
+2. Convert transforms.json to CSV
+Use the provided json_to_csv.py script.
+Note: The path to the transforms.json file is hardcoded in the script. Open the script and update the path to your specific file location:
+# Inside json_to_csv.py
+INPUT_JSON_PATH = "/path/to/transforms.json"
+OUTPUT_CSV_PATH = "/path/to/output/trajectory.csv"
+Run the script:
 python3 json_to_csv.py
-```
-**Output**: `trajectory.csv` located in `~/Desktop/my_custom_output/`.
+Output: trajectory.csv located at the updated OUTPUT_CSV_PATH.
+
 
 ---
 
@@ -153,32 +158,39 @@ conda activate csv_visualization
 conda install numpy pandas matplotlib -y
 ```
 
-### 2. Copy CSV File
+2. Copy CSV File
+Before running the visualization script, ensure the path to the CSV file is updated in the script.
+Note: The CSV file path is hardcoded in the visualize_csv.py script:
+# Inside visualize_csv.py
+CSV_FILE_PATH = "/path/to/trajectory.csv"
+Modify the script to point to your CSV file.
+Run the visualization script:
 ```bash
-cp ~/Desktop/my_custom_output/trajectory.csv ~/projects/csv_visualization/
+python3 visualize_csv.py
 ```
 
-### 3. Visualize Data
-Run the `visualize_csv.py` script:
-```bash
-python visualize_csv.py
-```
+
+
 
 ---
 
 ## Process and Visualize 2D Trajectory
 
-### 1. Project 3D Trajectory to 2D
-Run `projet_trajectory.py`:
-```bash
+The projet_trajectory.py script requires a CSV file path.
+Note: Update the path to the input CSV file inside the script:
+# Inside projet_trajectory.py
+INPUT_CSV_PATH = "/path/to/input_trajectory.csv"
+OUTPUT_CSV_PATH = "/path/to/projected_trajectory.csv"
+Run the script:
 python3 projet_trajectory.py
-```
+Output: projected_trajectory.csv at the updated OUTPUT_CSV_PATH.
 
-### 2. Visualize 2D Data
-Execute the visualization script:
-```bash
-python visualize_csv.py
-```
+Before running visualize_csv.py, ensure the path to the projected CSV file is updated in the script:
+# Inside visualize_csv.py
+CSV_FILE_PATH = "/path/to/projected_trajectory.csv"
+Run the visualization script:
+python3 visualize_csv.py
+
 
 ---
 
