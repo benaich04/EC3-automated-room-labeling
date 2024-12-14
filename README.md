@@ -1,6 +1,6 @@
-# EC3-automated-room-labeling
-This repository provides a complete workflow for running Stella VSLAM simulations, extracting data, and visualizing 3D and 2D trajectories. It includes detailed instructions, Python scripts for data processing and visualization, and solutions for common issues, making it a practical resource for VSLAM data analysis.
+# EC3-Automated-Room-Labeling
 
+This repository provides a comprehensive guide to running Stella VSLAM simulations, extracting data, and visualizing 3D and 2D trajectories. It includes detailed instructions, Python scripts for data processing and visualization, and solutions for common issues, making it an essential resource for VSLAM data analysis.
 
 ---
 
@@ -22,9 +22,9 @@ This repository provides a complete workflow for running Stella VSLAM simulation
 
 ## Overview
 
-This guide covers the entire process of running a Stella VSLAM simulation, from initial setup to data visualization. It provides:
-- Step-by-step instructions for simulation and data extraction.
-- Python scripts for processing and visualizing data.
+This guide details the workflow for using Stella VSLAM, covering everything from initial setup to data visualization. Key features include:
+- Step-by-step instructions for running the VSLAM simulation.
+- Python scripts for processing and visualizing output data.
 - Solutions to common issues encountered during the workflow.
 
 ---
@@ -33,13 +33,13 @@ This guide covers the entire process of running a Stella VSLAM simulation, from 
 
 ### Prerequisites
 - Docker installed and configured on your machine.
-- Basic familiarity with command-line tools.
-- Python installed, with Conda for virtual environment management.
+- Familiarity with command-line tools.
+- Python installed, with Conda for managing virtual environments.
 
 ### Required Files
 - `orb_vocab.fbow`: Orb vocabulary file.
-- `dense_hd.yaml`: Camera-specific settings for dense mapping.
-- Video file for simulation (e.g., `F2_stern.mp4`).
+- `dense_hd.yaml`: Camera-specific configuration file for dense mapping.
+- Video file for the simulation (e.g., `F2_stern.mp4`).
 
 ---
 
@@ -65,22 +65,24 @@ docker run -it --rm --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=671
 ./run_video_slam -v /data/orb_vocab.fbow -c /stella_vslam/example/dense/dense_hd.yaml -m /data/F2_stern.mp4 --frame-skip 3 -o /data/my_custom_output.db -p /data/my_custom_output.ply -k /data/my_custom_output_keyframes/
 ```
 - Replace **`F2_stern.mp4`** with your video file.
-- Adjust **`dense_hd.yaml`** based on camera settings.
-- Customize output file names (e.g., `my_custom_output.db`, `my_custom_output.ply`).
+- Adjust **`dense_hd.yaml`** based on your camera settings.
+- Customize the output file names (e.g., `my_custom_output.db`, `my_custom_output.ply`).
 
 ---
 
 ## Export Data for Analysis
 
-### 1. Create Output Directory
+### 1. Create the Output Directory
 ```bash
 mkdir -p /data/my_custom_output
 ```
 
 ### 2. Verify Export Script
+List the scripts directory to ensure the export script exists:
 ```bash
 ls /stella_vslam/scripts
 ```
+Confirm the presence of **`export_sqlite3_to_nerfstudio.py`**.
 
 ### 3. Run the Export Script
 ```bash
@@ -110,10 +112,11 @@ docker cp <CONTAINER_ID>:/data/my_custom_output ~/Desktop/my_custom_output
 
 ## Resolve Permission Issues
 
-### 1. Check Permissions
+### 1. Check Directory Permissions
 ```bash
 ls -ld ~/Desktop/my_custom_output
 ```
+If the owner is `root`, update ownership.
 
 ### 2. Change Ownership
 ```bash
@@ -128,69 +131,76 @@ sudo chown -R <your_username>:<your_username> ~/Desktop/my_custom_output
 ```bash
 ls -lh ~/Desktop/my_custom_output
 ```
-You should see:
+Expected files:
 - `dense.ply`
 - `sparse.ply`
 - `images/`
 - `transforms.json`
 
-
-2. Convert transforms.json to CSV
-Use the provided json_to_csv.py script.
-Note: The path to the transforms.json file is hardcoded in the script. Open the script and update the path to your specific file location:
+### 2. Convert `transforms.json` to CSV
+The `json_to_csv.py` script converts trajectory data into a CSV file.  
+**Note:** The path to `transforms.json` is hardcoded in the script. Update it before running:
+```python
 # Inside json_to_csv.py
 INPUT_JSON_PATH = "/path/to/transforms.json"
 OUTPUT_CSV_PATH = "/path/to/output/trajectory.csv"
+```
 Run the script:
+```bash
 python3 json_to_csv.py
-Output: trajectory.csv located at the updated OUTPUT_CSV_PATH.
-
+```
+**Output**: `trajectory.csv` located at the updated `OUTPUT_CSV_PATH`.
 
 ---
 
 ## Visualize Data in 3D
 
 ### 1. Prepare Conda Virtual Environment
-Activate your Conda environment and install dependencies:
+Activate and configure the environment:
 ```bash
 conda env list
 conda activate csv_visualization
 conda install numpy pandas matplotlib -y
 ```
 
-2. Copy CSV File
-Before running the visualization script, ensure the path to the CSV file is updated in the script.
-Note: The CSV file path is hardcoded in the visualize_csv.py script:
+### 2. Update CSV File Path
+The CSV file path is hardcoded in `visualize_csv.py`. Modify it before running:
+```python
 # Inside visualize_csv.py
 CSV_FILE_PATH = "/path/to/trajectory.csv"
-Modify the script to point to your CSV file.
-Run the visualization script:
+```
+Run the script:
 ```bash
 python3 visualize_csv.py
 ```
-
-
-
 
 ---
 
 ## Process and Visualize 2D Trajectory
 
-The projet_trajectory.py script requires a CSV file path.
-Note: Update the path to the input CSV file inside the script:
+### 1. Project 3D Trajectory to 2D
+Update the input CSV path in `projet_trajectory.py`:
+```python
 # Inside projet_trajectory.py
 INPUT_CSV_PATH = "/path/to/input_trajectory.csv"
 OUTPUT_CSV_PATH = "/path/to/projected_trajectory.csv"
+```
 Run the script:
+```bash
 python3 projet_trajectory.py
-Output: projected_trajectory.csv at the updated OUTPUT_CSV_PATH.
+```
+**Output**: `projected_trajectory.csv` at the updated `OUTPUT_CSV_PATH`.
 
-Before running visualize_csv.py, ensure the path to the projected CSV file is updated in the script:
+### 2. Visualize 2D Data
+Ensure the projected CSV file path is updated in `visualize_csv.py`:
+```python
 # Inside visualize_csv.py
 CSV_FILE_PATH = "/path/to/projected_trajectory.csv"
+```
 Run the visualization script:
+```bash
 python3 visualize_csv.py
-
+```
 
 ---
 
@@ -209,8 +219,8 @@ python3 visualize_csv.py
 ## Sample Outputs
 
 ### Raw Data Visualization in 3D
-*(Insert Image Placeholder)*
+ <img width="1359" alt="Screenshot 2024-12-14 at 21 40 33" src="https://github.com/user-attachments/assets/41d15090-41f5-45a7-a74a-56354ebef47f" />
 
 ### Processed (Projected) Data Visualization
-*(Insert Image Placeholder)*
-```
+
+<img width="1347" alt="Screenshot 2024-12-14 at 21 41 12" src="https://github.com/user-attachments/assets/5a03a2ad-00da-42f8-9750-fb4973f94b80" />
